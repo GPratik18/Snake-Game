@@ -1,0 +1,192 @@
+#include<iostream.h>
+#include<dos.h>
+#include<graphics.h>
+#include<conio.h>
+#define UPB 20
+#define LFB 20
+#define DNB 300
+#define RTB 300
+class Snake
+{
+	private:
+	int snakeposx,snakeposy;
+	public:
+	int getSnakePosx()
+	{
+		return snakeposx;
+	}
+	int getSnakePosy()
+	{
+		return snakeposy;
+	}
+	Snake()
+	{
+		snakeposx=23, snakeposy=23;
+	}
+      //	Snake(Snake sn)
+      //	{
+      //		snakeposx=23, snakeposy=23;
+      //	}
+	void snakemove()
+	{
+		switch(dir)
+		{
+		case 6:
+		snakeposx+=5;
+		break;
+		case 8:
+		snakeposy-=5;
+		break;
+		case 2:
+		snakeposy+=5;
+		break;
+		case 4:
+		snakeposx-=5;
+		break;
+		}
+	}
+	void snakepos(int c1,int c2)
+	{
+		setcolor(15);
+		circle(c1,c2,2);
+	}
+};
+class snakeMovement
+{
+	private:
+	int dir;
+	public:
+	snakeMovement()
+	{
+	   dir=6;
+	}
+	void goup()
+	{
+		dir=8;
+	}
+	void godown()
+	{
+		dir=2;
+	}
+	void goleft()
+	{
+		dir=4;
+	}
+	void goright()
+	{
+		dir=6;
+	}
+
+};
+class GameStatus
+{
+	private:
+	Snake s;
+	int p;
+	public:
+       //	GameStatus()
+       //	{
+       //		s=new Snake();
+       //		p=0;
+       //	}
+	GameStatus(Snake sn)
+	{
+		s=sn;
+		p=0;
+	}
+	Snake getSnake()
+	{
+		return s;
+	}
+	void pause()
+	{
+		if(p)
+		{
+			p=0;
+		}
+		else
+		{
+			p=1;
+			while(getch()!='p'){}
+		}
+	}
+	int isGameOver()
+	{
+		int x=s.getSnakePosx(),y=s.getSnakePosy();
+		if(x>LFB &&
+		   x<RTB &&
+		   y>UPB &&
+		   y<DNB)
+		{
+			return 1;
+		}
+		return 0;
+	}
+};
+class Game
+{
+	private:
+	Snake s;
+	GameStatus gs;
+	public:
+	Game()
+	{
+		gs.GameStatus(s);
+	}
+	GameStatus getGameStatus()
+	{
+		return gs;
+	}
+	void setBoard()
+	{
+		int gd,gm;
+		gd=DETECT;
+		initgraph(&gd,&gm,"C:/TURBOC3/BGI/");
+		setcolor(10);
+		rectangle(UPB,LFB,DNB,RTB);
+	}
+	void board()
+	{
+		setfillstyle(SOLID_FILL,0);
+		int poly[]= {UPB,LFB,UPB,RTB,DNB,RTB,DNB,LFB};
+		fillpoly(4,poly);
+	}
+	void input()
+	{
+		SnakeMovement sm=new SnakeMovement();
+		if(kbhit())
+		{
+			switch(getch())
+			{
+				case 'w':sm.goup();break;
+				case 's':sm.godown();break;
+				case 'd':sm.goright();break;
+				case 'a':sm.goleft();break;
+				case 'p':gs.pause();
+				    break;
+			}
+		}
+	}
+};
+
+void main()
+{
+
+	//Snake s=new Snake();
+	Game g;
+	GameStatus gs=g.getGameStatus();
+	Snake s=gs.getSnake();
+	//GameStatus gs=new GameStatus();
+	clrscr();
+	g.setBoard();
+	while(gs.isGameOver())
+	{
+		g.board();
+		s.snakepos(s.getSnakePosx(),s.getSnakePosy());
+		delay(200);
+		g.input();
+		s.snakemove();
+	}
+	getch();
+	closegraph();
+}
